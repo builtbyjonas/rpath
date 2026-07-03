@@ -1,0 +1,106 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.artifact }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            target: x86_64-unknown-linux-gnu
+            artifact: rpath-linux-x86_64
+            archive: tar
+            binary: rpath
+          - os: ubuntu-24.04-arm
+            target: aarch64-unknown-linux-gnu
+            artifact: rpath-linux-aarch64
+            archive: tar
+            binary: rpath
+          - os: windows-2025
+            target: x86_64-pc-windows-msvc
+            artifact: rpath-windows-x86_64
+            archive: zip
+            binary: rpath.exe
+          - os: windows-11-arm
+            target: aarch64-pc-windows-msvc
+            artifact: rpath-windows-aarch64
+            archive: zip
+            binary: rpath.exe
+          - os: macos-15-intel
+            target: x86_64-apple-darwin
+            artifact: rpath-macos-x86_64
+            archive: tar
+            binary: rpath
+          - os: macos-15
+            target: aarch64-apple-darwin
+            artifact: rpath-macos-aarch64
+            archive: tar
+            binary: rpath
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: release-${{ matrix.target }}
+      - run: cargo test --workspace --target ${{ matrix.target }}
+      - run: cargo build --release -p rpath --target ${{ matrix.target }}
+      - name: Package Unix
+        if: matrix.archive == 'tar'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "dist/${{ matrix.artifact }}"
+          cp "target/${{ matrix.target }}/release/${{ matrix.binary }}" "dist/${{ matrix.artifact }}/"
+          cp README.md LICENSE CHANGELOG.md "dist/${{ matrix.artifact }}/"
+          tar -C dist -czf "dist/${{ matrix.artifact }}.tar.gz" "${{ matrix.artifact }}"
+          shasum -a 256 "dist/${{ matrix.artifact }}.tar.gz" > "dist/${{ matrix.artifact }}.tar.gz.sha256"
+      - name: Package Windows
+        if: matrix.archive == 'zip'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path "dist/${{ matrix.artifact }}" | Out-Null
+          Copy-Item "target/${{ matrix.target }}/release/${{ matrix.binary }}" "dist/${{ matrix.artifact }}/"
+          Copy-Item README.md,LICENSE,CHANGELOG.md "dist/${{ matrix.artifact }}/"
+          Compress-Archive -Path "dist/${{ matrix.artifact }}" -DestinationPath "dist/${{ matrix.artifact }}.zip" -Force
+          Get-FileHash "dist/${{ matrix.artifact }}.zip" -Algorithm SHA256 | ForEach-Object {
+            "$($_.Hash.ToLower())  dist/${{ matrix.artifact }}.zip"
+          } | Set-Content "dist/${{ matrix.artifact }}.zip.sha256"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.artifact }}
+          path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.sha256
+          if-no-files-found: error
+
+  github-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-24.04
+    needs: build
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.sha256

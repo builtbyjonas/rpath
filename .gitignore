@@ -1,0 +1,9 @@
+/target/
+/.rpath/
+*.pdb
+*.profraw
+*.profdata
+*.bak
+*.tmp
+.DS_Store
+Thumbs.db

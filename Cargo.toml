@@ -1,0 +1,33 @@
+[workspace]
+members = [
+    "crates/rpath-core",
+    "crates/rpath-shell",
+    "crates/rpath-integrations",
+    "crates/rpath-cli",
+]
+default-members = ["crates/rpath-cli"]
+resolver = "3"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT"
+authors = ["ByJonas <me@byjonas.dev>"]
+repository = "https://github.com/builtbyjonas/rpath"
+homepage = "https://github.com/builtbyjonas/rpath"
+documentation = "https://github.com/builtbyjonas/rpath#readme"
+description = "Refresh shell PATH and environment state without restarting your terminal."
+readme = "README.md"
+keywords = ["path", "environment", "cli", "shell", "terminal"]
+categories = ["command-line-utilities", "development-tools"]
+
+[workspace.dependencies]
+anyhow = "1"
+clap = { version = "4.5", features = ["derive"] }
+dirs = "6"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+tempfile = "3"
+thiserror = "2"
+windows-sys = "0.61"

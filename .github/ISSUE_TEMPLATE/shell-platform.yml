@@ -1,0 +1,45 @@
+name: Shell or Platform Issue
+description: Report shell integration, PATH source, or OS-specific behavior.
+title: "platform: "
+labels: ["platform", "shell"]
+body:
+  - type: dropdown
+    id: shell
+    attributes:
+      label: Shell
+      options:
+        - cmd
+        - PowerShell
+        - PowerShell Core
+        - bash
+        - zsh
+        - fish
+        - Git Bash
+        - WSL
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS version
+      placeholder: Windows 11 24H2, Ubuntu 24.04, macOS 15
+    validations:
+      required: true
+  - type: textarea
+    id: setup
+    attributes:
+      label: Shell setup
+      description: Mention profile files, terminal app, VS Code, WSL, or Git Bash details.
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+    validations:
+      required: true
+  - type: textarea
+    id: output
+    attributes:
+      label: Relevant command output
+      render: shell

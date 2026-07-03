@@ -1,0 +1,27 @@
+[package]
+name = "rpath"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation.workspace = true
+description.workspace = true
+readme = "../../README.md"
+keywords.workspace = true
+categories.workspace = true
+
+[dependencies]
+anyhow.workspace = true
+clap.workspace = true
+rpath-core = { path = "../rpath-core", version = "0.1.0" }
+rpath-integrations = { path = "../rpath-integrations", version = "0.1.0" }
+rpath-shell = { path = "../rpath-shell", version = "0.1.0" }
+serde.workspace = true
+serde_json.workspace = true
+
+[[bin]]
+name = "rpath"
+path = "src/main.rs"

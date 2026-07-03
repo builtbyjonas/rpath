@@ -1,0 +1,15 @@
+[package]
+name = "rpath-shell"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+authors.workspace = true
+repository.workspace = true
+description = "Shell emitters, wrappers, and profile installers for rpath."
+
+[dependencies]
+dirs.workspace = true
+rpath-core = { path = "../rpath-core", version = "0.1.0" }
+serde.workspace = true
+thiserror.workspace = true
