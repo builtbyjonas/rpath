@@ -23,16 +23,16 @@ the current shell session through a tiny installed wrapper.
 
 ## Install
 
-Linux and macOS:
-
-```bash
-curl -fsSL https://get.rpath.dev/install.sh | sh
-```
-
 Windows PowerShell:
 
 ```powershell
 irm https://get.rpath.dev/install.ps1 | iex
+```
+
+Linux and macOS:
+
+```bash
+curl -fsSL https://get.rpath.dev/install.sh | sh
 ```
 
 ## Quick Start
