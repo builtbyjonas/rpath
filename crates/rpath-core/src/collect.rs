@@ -166,9 +166,10 @@ pub fn detect_shell() -> ShellKind {
 }
 
 pub fn shell_from_process_name(name: &str) -> Option<ShellKind> {
-    let file_name = Path::new(name)
-        .file_name()
-        .and_then(|value| value.to_str())
+    let file_name = name
+        .trim_matches(['"', '\''])
+        .rsplit(['/', '\\'])
+        .next()
         .unwrap_or(name)
         .to_ascii_lowercase();
     match file_name.as_str() {
