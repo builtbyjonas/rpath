@@ -4,32 +4,53 @@
 
 # rpath
 
-Refresh your shell environment without restarting your terminal.
+Refresh your shell environment instantly — without restarting your terminal.
 
-`rpath` rebuilds PATH from system, user, shell, and package-manager sources,
-deduplicates entries, keeps critical system paths, and emits commands that update
-the current shell session through a tiny installed wrapper.
+rpath is a cross-platform environment manager that rebuilds and safely applies your PATH and environment variables to the current shell session, similar to sourcing `.bashrc` on Linux but primarily built for Windows, also works on macOS, and Linux.
+
+> [!NOTE]
+> Think: “source ~/.bashrc” — but for PATH changes everywhere.
+
+---
+
+## Why rpath exists
+
+On Windows, PATH changes are fragmented and painful:
+
+- You install a tool → PATH updates don’t apply
+- You restart terminals constantly
+- You log out just to refresh environment variables
+- Each shell behaves differently
+
+rpath fixes this by:
+- rebuilding your environment from all system sources
+- computing a safe, deduplicated PATH
+- applying updates directly into the current shell session
+
+No restarts. No hacks. No manual copying.
 
 ## Features
 
-- One-command refresh after setup: `rpath`
-- Cross-platform PATH planning for Windows, Linux, and macOS
-- Shell emitters for PowerShell, PowerShell Core, cmd, bash, zsh, and fish
-- Diagnostics for duplicates, missing entries, invalid entries, and basic risks
-- Diff, repair, snapshot, restore, and environment version tracking
-- Local integrations for VS Code terminals, Windows Explorer, Git Bash, and WSL
-- Optional foreground watcher or user service/scheduled task
-- Offline by design: no runtime network calls
+- One-command refresh: `rpath`
+- Cross-platform: Windows, Linux, macOS
+- Shell support: PowerShell, cmd, bash, zsh, fish
+- PATH diagnostics (duplicates, invalid entries, risks)
+- Diff, repair, snapshot & restore system state
+- Environment version tracking
+- Integrations: VS Code, Explorer, WSL, Git Bash
+- Optional watcher/service mode
+- Offline by design (no network calls at runtime)
+- Safe execution model (no silent system mutation)
 
 ## Install
 
-Windows PowerShell:
+### Windows (PowerShell)
 
 ```powershell
 irm https://get.rpath.dev/install.ps1 | iex
-```
+````
 
-Linux and macOS:
+### Linux / macOS
 
 ```bash
 curl -fsSL https://get.rpath.dev/install.sh | sh
@@ -37,30 +58,39 @@ curl -fsSL https://get.rpath.dev/install.sh | sh
 
 ## Quick Start
 
-Install the wrapper for your current shell:
+Install shell integration:
 
 ```bash
 rpath install
 ```
 
-You can also be explicit when setting up a specific shell:
+Or explicitly:
 
 ```bash
-rpath install --shell cmd
 rpath install --shell powershell
-rpath install --shell pwsh
+rpath install --shell cmd
+rpath install --shell bash
 ```
 
-Restart the shell once or source your profile. From then on:
+Restart your terminal once, then:
 
 ```bash
 rpath
 ```
 
-The wrapper evaluates `rpath --emit` under the hood, which is required because a
-native child process cannot directly mutate its parent shell.
+From now on, PATH refresh works instantly.
 
-For manual use:
+## How it works
+
+rpath cannot directly modify a parent shell process (this is a system limitation).
+
+Instead it:
+
+1. Builds a safe environment plan
+2. Emits shell-compatible commands
+3. Executes them via a small installed wrapper
+
+Example:
 
 ```bash
 eval "$(rpath --emit --shell bash)"
@@ -72,22 +102,6 @@ PowerShell:
 Invoke-Expression (& rpath --emit --shell pwsh)
 ```
 
-If PowerShell refuses to load your profile with an execution-policy error, check
-the current policy:
-
-```powershell
-Get-ExecutionPolicy -List
-```
-
-For a normal per-user setup, allow local profile scripts for the current user:
-
-```powershell
-Set-ExecutionPolicy -Scope CurrentUser RemoteSigned
-```
-
-Restart PowerShell after changing the policy. This allows the local `$PROFILE`
-file updated by `rpath install` to load without changing machine-wide policy.
-
 Fish:
 
 ```fish
@@ -97,115 +111,112 @@ rpath --emit --shell fish | source
 ## Commands
 
 ```text
-rpath                         Build a refresh plan
-rpath --emit                  Emit shell commands for the detected shell
-rpath print                   Print the computed PATH
-rpath doctor [--security]     Diagnose PATH problems
-rpath diff                    Show added, removed, and reordered entries
-rpath repair [--emit]         Build or emit a repaired PATH
-rpath snapshot save [reason]  Save the current plan
-rpath snapshot list           List saved snapshots
-rpath snapshot restore [id]   Restore a snapshot through emit mode
-rpath snapshot delete <id>    Delete a snapshot
-rpath version list            List automatically tracked versions
-rpath version diff <a> <b>    Diff two tracked versions
-rpath version restore <id>    Restore a tracked version through emit mode
-rpath install [--all]         Install shell wrappers
-rpath uninstall [--all]       Remove shell wrappers
-rpath init                    Print a shell wrapper snippet
-rpath watch                   Poll for PATH changes and save versions
-rpath integrate <target> <action>
+rpath                         Rebuild environment plan
+rpath --emit                  Emit shell update commands
+rpath print                   Print computed PATH
+rpath doctor                  Diagnose environment issues
+rpath diff                    Show PATH differences
+rpath repair                  Fix PATH issues safely
+
+rpath snapshot save           Save current state
+rpath snapshot list           List snapshots
+rpath snapshot restore        Restore snapshot
+
+rpath version list            Show tracked environment versions
+rpath version diff            Compare versions
+
+rpath install                 Install shell integration
+rpath uninstall               Remove shell integration
+
+rpath watch                   Track environment changes
+rpath integrate               Connect external tools
 ```
 
-Targets for `integrate` are `vscode`, `explorer`, `wsl`, and `git-bash`.
-Actions are `install`, `uninstall`, and `status`.
+## Safety model
 
-Global flags:
+rpath is designed to be non-destructive:
 
-```text
---shell <cmd|powershell|pwsh|bash|zsh|fish>
---json
---verbose
---dry-run
---no-dedupe
---strict
-```
+* `❌` Never modifies system PATH directly during refresh
+* `❌` Never silently writes system-wide changes
+* `❌` Never performs network calls at runtime
+* `✅` Only emits shell-safe commands
+* `✅` Requires explicit install for persistence
+* `✅` Creates backups before modifying profiles
+* `✅` Refuses invalid or unsafe PATH plans
 
-## Safety Model
+## Platform sources
 
-`rpath` never mutates system-wide environment variables during a refresh. It
-computes a plan and emits commands for the current session. Persistent writes
-only happen for explicit commands such as `install`, `uninstall`, `snapshot`,
-`watch --install-service`, or `integrate ... install`.
+rpath builds PATH from multiple trusted sources:
 
-Profile installers create backups before editing profile files. If the computed
-PATH plan contains hard errors, shell emitters refuse to output mutation
-commands.
+### Windows
 
-## Platform Sources
+* User + system registry PATH
+* Current process environment
+* Git for Windows / MSYS (if present)
+* Critical system directories preserved automatically
 
-Windows:
+### Linux / macOS
 
-- Current process environment
-- HKLM and HKCU PATH registry values
-- Git for Windows and MSYS paths when present
-- Critical Windows system paths preserved from the current PATH
+* Shell profiles (`.bashrc`, `.zshrc`, etc.)
+* `/etc/environment`
+* Package managers (Homebrew, Nix, Snap, Flatpak)
+* User-local bin paths
 
-Linux and macOS:
+## State system
 
-- Current process environment
-- `/etc/environment`, `/etc/profile`
-- `~/.profile`, `~/.bashrc`, `~/.zshrc`
-- `~/.config/fish/config.fish`
-- Sandboxed child-shell environment capture with timeout
-- Homebrew, Nix, Snap, Flatpak, and `~/.local/bin` paths when present
+rpath stores:
 
-## State
+* snapshots (manual saves)
+* version history (automatic tracking)
+* integration markers
+* watcher state
 
-Snapshots, versions, integration markers, and watcher state are stored in the
-platform data directory under `rpath`.
+Stored locally in platform data directories.
 
-Use JSON mode for automation:
+## JSON mode
+
+For scripting and automation:
 
 ```bash
 rpath doctor --json
 rpath snapshot list --json
-rpath integrate vscode status --json
+rpath diff --json
 ```
 
 ## Development
-
-Build from source:
 
 ```bash
 cargo build --workspace
 cargo run -- --help
 ```
 
+### Quality checks
+
 ```bash
 cargo fmt --all -- --check
-cargo clippy --workspace --all-targets -- -D warnings
+cargo clippy --workspace --all-targets -D warnings
 cargo test --workspace
 cargo doc --workspace --no-deps
 ```
 
-The repository is a Cargo workspace:
+### Workspace
 
-- `rpath-core`: environment collection, PATH planning, diagnostics, state
-- `rpath-shell`: shell emitters and profile installers
-- `rpath-integrations`: VS Code, Explorer, WSL, Git Bash, and watcher services
-- `rpath`: CLI binary
+* `rpath-core` – environment model & PATH planner
+* `rpath-shell` – shell emitters
+* `rpath-integrations` – external integrations
+* `rpath` – CLI binary
 
 ## Troubleshooting
 
-If `rpath` prints a plan but your shell does not change, run `rpath install` and
-open a new shell. Without the wrapper, use the shell-specific `--emit` examples
-above.
+If changes don’t apply:
 
-If profile sourcing is slow or noisy, `rpath` falls back to safe parsing and
-reports a warning through `rpath doctor`.
+```bash
+rpath install
+```
 
-If PATH output looks wrong, run:
+Then restart your terminal.
+
+For debugging:
 
 ```bash
 rpath doctor --verbose
@@ -215,5 +226,8 @@ rpath repair
 
 ## Contributing
 
-See [CONTRIBUTING.md](CONTRIBUTING.md), [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md),
-and [SECURITY.md](SECURITY.md).
+See:
+
+* [CONTRIBUTING.md](https://github.com/builtbyjonas/rpath/blob/main/CONTRIBUTING.md)
+* [CODE_OF_CONDUCT.md](https://github.com/builtbyjonas/rpath/blob/main/CODE_OF_CONDUCT.md)
+* [SECURITY.md](https://github.com/builtbyjonas/rpath/blob/main/SECURITY.md)
