@@ -1,3 +1,5 @@
+mod upgrade;
+
 use anyhow::{Context, Result};
 use clap::{Args, Parser, Subcommand, ValueEnum};
 use rpath_core::{
@@ -85,6 +87,8 @@ enum Command {
     Print,
     /// Build a repaired PATH plan with invalid entries removed.
     Repair,
+    /// Check for and install a newer rpath release.
+    Upgrade(UpgradeArgs),
     /// Install shell wrappers so bare `rpath` applies to the current session.
     Install(InstallArgs),
     /// Remove installed shell wrappers.
@@ -114,6 +118,13 @@ struct InstallArgs {
     /// Install or uninstall all shell wrappers that are relevant to this OS.
     #[arg(long)]
     all: bool,
+}
+
+#[derive(Debug, Args)]
+struct UpgradeArgs {
+    /// Check whether an update is available without installing it.
+    #[arg(long)]
+    check: bool,
 }
 
 #[derive(Debug, Args)]
@@ -204,6 +215,7 @@ fn main() -> Result<()> {
         Some(Command::Version { command }) => version(&cli, command),
         Some(Command::Print) => print_path(&cli),
         Some(Command::Repair) => repair(&cli),
+        Some(Command::Upgrade(args)) => upgrade(&cli, args),
         Some(Command::Install(args)) => install(&cli, args),
         Some(Command::Uninstall(args)) => uninstall(&cli, args),
         Some(Command::Init) => init(&cli),
@@ -379,6 +391,23 @@ fn repair(cli: &Cli) -> Result<()> {
         println!("Use `rpath repair --emit` through your shell wrapper to apply this plan.");
     }
     Ok(())
+}
+
+fn upgrade(cli: &Cli, args: &UpgradeArgs) -> Result<()> {
+    let report =
+        upgrade::run(upgrade::UpgradeOptions { check_only: args.check, dry_run: cli.dry_run })?;
+    if cli.json {
+        print_json(&report)
+    } else {
+        println!("{}", report.message);
+        if let Some(artifact) = &report.artifact {
+            println!("artifact: {artifact}");
+        }
+        if let Some(path) = &report.binary_path {
+            println!("binary: {path}");
+        }
+        Ok(())
+    }
 }
 
 fn install(cli: &Cli, args: &InstallArgs) -> Result<()> {

@@ -39,7 +39,7 @@ No restarts. No hacks. No manual copying.
 - Environment version tracking
 - Integrations: VS Code, Explorer, WSL, Git Bash
 - Optional watcher/service mode
-- Offline by design (no network calls at runtime)
+- Offline refresh path; hosted install and `rpath upgrade` use explicit GitHub Release downloads
 - Safe execution model (no silent system mutation)
 
 ## Install
@@ -48,13 +48,15 @@ No restarts. No hacks. No manual copying.
 
 ```powershell
 irm https://get.rpath.dev/install.ps1 | iex
-````
+```
 
 ### Linux / macOS
 
 ```bash
 curl -fsSL https://get.rpath.dev/install.sh | sh
 ```
+
+The hosted installer verifies release checksums, installs a user-local binary, and asks whether to install shell integration for the detected shell.
 
 ## Quick Start
 
@@ -79,6 +81,18 @@ rpath
 ```
 
 From now on, PATH refresh works instantly.
+
+## Uninstall
+
+```powershell
+irm https://get.rpath.dev/uninstall.ps1 | iex
+```
+
+```bash
+curl -fsSL https://get.rpath.dev/uninstall.sh | sh
+```
+
+The uninstall scripts remove the hosted-install binary and PATH entry. Local snapshots and versions are kept unless you pass the purge option.
 
 ## How it works
 
@@ -125,6 +139,7 @@ rpath snapshot restore        Restore snapshot
 rpath version list            Show tracked environment versions
 rpath version diff            Compare versions
 
+rpath upgrade                 Upgrade the installed binary
 rpath install                 Install shell integration
 rpath uninstall               Remove shell integration
 
@@ -138,9 +153,9 @@ rpath is designed to be non-destructive:
 
 * `❌` Never modifies system PATH directly during refresh
 * `❌` Never silently writes system-wide changes
-* `❌` Never performs network calls at runtime
+* `❌` Never performs network calls during refresh
 * `✅` Only emits shell-safe commands
-* `✅` Requires explicit install for persistence
+* `✅` Requires explicit install, uninstall, or upgrade commands for persistent changes
 * `✅` Creates backups before modifying profiles
 * `✅` Refuses invalid or unsafe PATH plans
 
