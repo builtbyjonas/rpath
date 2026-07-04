@@ -346,11 +346,6 @@ try {
 }
 
 #[cfg(not(windows))]
-fn windows_helper_script() -> &'static str {
-    ""
-}
-
-#[cfg(not(windows))]
 fn temp_path_next_to(target: &Path) -> Result<std::path::PathBuf> {
     let file_name = target
         .file_name()

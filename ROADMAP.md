@@ -2,15 +2,15 @@
 
 ## 0.1
 
-- Stabilize command behavior and JSON output.
-- Expand platform smoke tests.
-- Validate install/uninstall flows on all supported shells.
+- [x] Stabilize command behavior and JSON output.
+- [x] Expand platform smoke tests.
+- [x] Validate install/uninstall flows on all supported shells.
 
 ## 0.2
 
 - Add richer registry and profile parsing fixtures.
 - Improve WSL import/export ergonomics.
-- Add release artifacts for GitHub Releases.
+- Add signed artifacts, attestations, or package-manager distribution.
 
 ## 1.0
 

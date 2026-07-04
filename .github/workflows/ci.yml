@@ -31,3 +31,31 @@ jobs:
       - run: cargo run -- doctor
       - run: cargo run -- diff
       - run: cargo run -- --emit
+      - name: Smoke JSON output
+        run: |
+          cargo run -- --dry-run --json
+          cargo run -- --dry-run --json print
+          cargo run -- --dry-run --json doctor
+          cargo run -- --dry-run --json diff
+          cargo run -- --json --dry-run snapshot save "ci smoke"
+      - name: Smoke Unix shell wrappers
+        if: runner.os != 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          for shell in bash zsh fish; do
+            cargo run -- --shell "$shell" init
+            cargo run -- --dry-run --shell "$shell" --emit
+            cargo run -- --dry-run --json --shell "$shell" install
+            cargo run -- --dry-run --json --shell "$shell" uninstall
+          done
+      - name: Smoke Windows shell wrappers
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          foreach ($shell in @("powershell", "pwsh", "cmd")) {
+            cargo run -- --shell $shell init
+            cargo run -- --dry-run --shell $shell --emit
+            cargo run -- --dry-run --json --shell $shell install
+            cargo run -- --dry-run --json --shell $shell uninstall
+          }

@@ -9,7 +9,7 @@ Refresh your shell environment instantly — without restarting your terminal.
 rpath is a cross-platform environment manager that rebuilds and safely applies your PATH and environment variables to the current shell session, similar to sourcing `.bashrc` on Linux but primarily built for Windows, also works on macOS, and Linux.
 
 > [!NOTE]
-> Think: “source ~/.bashrc” — but for PATH changes everywhere.
+> Think: ``source ~/.bashrc`` but for PATH changes everywhere.
 
 ---
 
