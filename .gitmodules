@@ -1,3 +1,6 @@
 [submodule "www"]
 	path = www
 	url = https://github.com/builtbyjonas/rpath-www.git
+[submodule "get-server"]
+	path = get-server
+	url = https://github.com/builtbyjonas/rpath-get.git
