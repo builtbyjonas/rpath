@@ -243,6 +243,6 @@ rpath repair
 
 See:
 
-* [CONTRIBUTING.md](https://github.com/builtbyjonas/rpath/blob/main/CONTRIBUTING.md)
-* [CODE_OF_CONDUCT.md](https://github.com/builtbyjonas/rpath/blob/main/CODE_OF_CONDUCT.md)
-* [SECURITY.md](https://github.com/builtbyjonas/rpath/blob/main/SECURITY.md)
+* [CONTRIBUTING.md](https://github.com/rpathdev/rpath/blob/main/CONTRIBUTING.md)
+* [CODE_OF_CONDUCT.md](https://github.com/rpathdev/rpath/blob/main/CODE_OF_CONDUCT.md)
+* [SECURITY.md](https://github.com/rpathdev/rpath/blob/main/SECURITY.md)

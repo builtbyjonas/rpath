@@ -6,6 +6,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+## [0.1.1] - 2026-07-18
+
+## What's Changed
+* chore(deps): bump clap from 4.6.1 to 4.6.2 by @dependabot[bot] in https://github.com/rpathdev/rpath/pull/7
+* chore(deps): bump zip from 2.4.2 to 8.6.0 by @dependabot[bot] in https://github.com/rpathdev/rpath/pull/5
+* chore(deps): bump sha2 from 0.10.9 to 0.11.0 by @dependabot[bot] in https://github.com/rpathdev/rpath/pull/6
+
 ## [0.1.0] - 2026-07-04
 
 ### Added

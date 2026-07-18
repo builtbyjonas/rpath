@@ -10,8 +10,8 @@ description = "Local editor, Explorer, WSL, and Git Bash integrations for rpath.
 
 [dependencies]
 dirs.workspace = true
-rpath-core = { path = "../rpath-core", version = "0.1.0" }
-rpath-shell = { path = "../rpath-shell", version = "0.1.0" }
+rpath-core = { path = "../rpath-core", version = "0.1.1" }
+rpath-shell = { path = "../rpath-shell", version = "0.1.1" }
 serde.workspace = true
 serde_json.workspace = true
 thiserror.workspace = true

@@ -948,7 +948,7 @@ dependencies = [
 
 [[package]]
 name = "rpath"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "anyhow",
  "clap",
@@ -967,7 +967,7 @@ dependencies = [
 
 [[package]]
 name = "rpath-core"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "dirs",
  "serde",
@@ -979,7 +979,7 @@ dependencies = [
 
 [[package]]
 name = "rpath-integrations"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "dirs",
  "rpath-core",
@@ -991,7 +991,7 @@ dependencies = [
 
 [[package]]
 name = "rpath-shell"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "dirs",
  "rpath-core",

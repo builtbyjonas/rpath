@@ -8,7 +8,7 @@ use std::{
     path::Path,
 };
 
-const LATEST_RELEASE_URL: &str = "https://api.github.com/repos/builtbyjonas/rpath/releases/latest";
+const LATEST_RELEASE_URL: &str = "https://api.github.com/repos/rpathdev/rpath/releases/latest";
 
 #[derive(Debug, Clone, Copy)]
 pub struct UpgradeOptions {
@@ -385,9 +385,9 @@ mod tests {
 
     #[test]
     fn compares_versions_with_v_prefix() {
-        assert!(is_newer_version("v0.2.0", "0.1.0").unwrap());
-        assert!(!is_newer_version("v0.1.0", "0.1.0").unwrap());
-        assert!(!is_newer_version("v0.0.9", "0.1.0").unwrap());
+        assert!(is_newer_version("v0.2.0", "0.1.1").unwrap());
+        assert!(!is_newer_version("v0.1.1", "0.1.1").unwrap());
+        assert!(!is_newer_version("v0.0.9", "0.1.1").unwrap());
     }
 
     #[test]

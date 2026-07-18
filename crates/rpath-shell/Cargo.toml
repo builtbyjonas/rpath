@@ -10,6 +10,6 @@ description = "Shell emitters, wrappers, and profile installers for rpath."
 
 [dependencies]
 dirs.workspace = true
-rpath-core = { path = "../rpath-core", version = "0.1.0" }
+rpath-core = { path = "../rpath-core", version = "0.1.1" }
 serde.workspace = true
 thiserror.workspace = true
