@@ -219,10 +219,7 @@ fn parse_version(input: &str) -> Result<Version> {
 
 fn verify_checksum(bytes: &[u8], checksum_text: &str) -> Result<()> {
     let expected = parse_sha256(checksum_text)?;
-    let actual = Sha256::digest(bytes)
-        .iter()
-        .map(|b| format!("{:02x}", b))
-        .collect::<String>();
+    let actual = Sha256::digest(bytes).iter().map(|b| format!("{:02x}", b)).collect::<String>();
     if actual != expected {
         bail!("checksum mismatch: expected {expected}, got {actual}");
     }
